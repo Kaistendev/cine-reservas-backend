@@ -1,0 +1,47 @@
+{
+  "name": "cine-reservas-backend",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --hot src/index.ts",
+    "start": "bun src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "bun src/db/seed.ts",
+    "db:setup": "bun run db:generate && bun run db:migrate && bun run db:seed",
+    "test": "NODE_ENV=test bun test",
+    "lint": "eslint src/",
+    "db:select-all": "docker exec -i cine-postgres psql -U cineuser -d cinereservas < scripts/select-all.sql"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/supertest": "^7.2.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.4.0",
+    "supertest": "^7.2.2",
+    "typescript-eslint": "^8.59.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1",
+    "postgres": "^3.4.9",
+    "zod": "^4.4.3"
+  }
+}
