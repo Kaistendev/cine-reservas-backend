@@ -21,4 +21,14 @@ export const authController = {
       next(err);
     }
   },
+
+  async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
+      const result = await authService.refresh(refreshToken);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  },
 };

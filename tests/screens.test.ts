@@ -9,7 +9,7 @@ beforeAll(async () => {
   const res = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  adminToken = res.body.token;
+  adminToken = res.body.accessToken;
 });
 
 test("GET /screens — listar", async () => {

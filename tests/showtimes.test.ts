@@ -11,7 +11,7 @@ beforeAll(async () => {
   const adminRes = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  adminToken = adminRes.body.token;
+  adminToken = adminRes.body.accessToken;
 
   const catRes = await request(app)
     .post("/categories")
@@ -63,7 +63,7 @@ test("POST /showtimes — user no autorizado (403)", async () => {
   const userRes = await request(app)
     .post("/auth/login")
     .send({ email: "user@cine.com", password: "admin123" });
-  const token = userRes.body.token;
+  const token = userRes.body.accessToken;
   const future = new Date();
   future.setDate(future.getDate() + 7);
 

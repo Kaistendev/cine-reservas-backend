@@ -58,10 +58,13 @@ test("errorHandler — SyntaxError (JSON inválido) responde 400", () => {
 });
 
 test("errorHandler — error genérico responde 500", () => {
+  const orig = console.error;
+  console.error = () => {};
   const err = new Error("Algo salió mal");
   const req = mockReq();
   const res = mockRes();
   errorHandler(err, req as any, res as any, {} as NextFunction);
   expect(res.statusCode).toBe(500);
   expect(res.body).toEqual({ error: "Error interno del servidor" });
+  console.error = orig;
 });

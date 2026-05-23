@@ -6,6 +6,10 @@ export const authSchema = z.object({
   password: z.string().min(1).describe("Contraseña"),
 });
 
+export const refreshSchema = z.object({
+  refreshToken: z.string().min(1),
+});
+
 // ─── Movies ────────────────────────────────────────────────
 export const createMovieSchema = z.object({
   title: z.string().min(1).max(255),

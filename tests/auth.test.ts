@@ -9,12 +9,12 @@ beforeAll(async () => {
   const adminRes = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  adminToken = adminRes.body.token;
+  adminToken = adminRes.body.accessToken;
 
   const userRes = await request(app)
     .post("/auth/login")
     .send({ email: "user@cine.com", password: "admin123" });
-  userToken = userRes.body.token;
+  userToken = userRes.body.accessToken;
 });
 
 test("POST /auth/register — crear usuario", async () => {
@@ -23,7 +23,7 @@ test("POST /auth/register — crear usuario", async () => {
     .post("/auth/register")
     .send({ email, password: "123456" });
   expect(res.status).toBe(201);
-  expect(res.body.token).toBeDefined();
+  expect(res.body.accessToken).toBeDefined();
   expect(res.body.user.email).toBe(email);
 });
 
@@ -59,4 +59,42 @@ test("GET /me — con token válido", async () => {
     .set("Authorization", `Bearer ${adminToken}`);
   expect(res.status).toBe(200);
   expect(res.body.user.email).toBe("admin@cine.com");
+});
+
+test("POST /auth/login — devuelve accessToken y refreshToken", async () => {
+  const res = await request(app)
+    .post("/auth/login")
+    .send({ email: "admin@cine.com", password: "admin123" });
+  expect(res.status).toBe(200);
+  expect(res.body.accessToken).toBeDefined();
+  expect(res.body.refreshToken).toBeDefined();
+  expect(res.body.user).toBeDefined();
+});
+
+test("POST /auth/refresh — renueva access token", async () => {
+  const login = await request(app)
+    .post("/auth/login")
+    .send({ email: "admin@cine.com", password: "admin123" });
+  const refreshToken = login.body.refreshToken;
+
+  const res = await request(app)
+    .post("/auth/refresh")
+    .send({ refreshToken });
+  expect(res.status).toBe(200);
+  expect(res.body.accessToken).toBeDefined();
+  expect(typeof res.body.accessToken).toBe("string");
+});
+
+test("POST /auth/refresh — refresh token inválido (401)", async () => {
+  const res = await request(app)
+    .post("/auth/refresh")
+    .send({ refreshToken: "token-invalido" });
+  expect(res.status).toBe(401);
+});
+
+test("POST /auth/refresh — body vacío (400)", async () => {
+  const res = await request(app)
+    .post("/auth/refresh")
+    .send({});
+  expect(res.status).toBe(400);
 });

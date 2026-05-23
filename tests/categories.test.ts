@@ -9,7 +9,7 @@ beforeAll(async () => {
   const res = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  adminToken = res.body.token;
+  adminToken = res.body.accessToken;
 });
 
 test("GET /categories — listar", async () => {
@@ -38,7 +38,7 @@ test("POST /categories — user no autorizado (403)", async () => {
   const userRes = await request(app)
     .post("/auth/login")
     .send({ email: "user@cine.com", password: "admin123" });
-  const token = userRes.body.token;
+  const token = userRes.body.accessToken;
 
   const res = await request(app)
     .post("/categories")

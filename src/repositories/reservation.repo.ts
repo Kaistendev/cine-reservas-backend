@@ -1,5 +1,6 @@
 import { db } from "../db";
 import {
+  users,
   reservations,
   reservedSeats,
   showtimes,
@@ -119,5 +120,52 @@ export const reservationRepo = {
       .set({ status: "CANCELLED" })
       .where(eq(reservations.id, id))
       .returning();
+  },
+
+  findAll(page = 1, limit = 20) {
+    const offset = (page - 1) * limit;
+    return db
+      .select({
+        id: reservations.id,
+        status: reservations.status,
+        totalAmount: reservations.totalAmount,
+        createdAt: reservations.createdAt,
+        user: sql<{ id: number; email: string; role: string }>`
+          json_build_object('id', ${users}, 'email', ${users.email}, 'role', ${users.role})
+        `,
+        showtime: sql<{ id: number; startTime: string; ticketPrice: string }>`
+          json_build_object('id', ${showtimes.id}, 'startTime', ${showtimes.startTime}, 'ticketPrice', ${showtimes.ticketPrice})
+        `,
+        movie: sql<{ id: number; title: string; durationMinutes: number }>`
+          json_build_object('id', ${movies.id}, 'title', ${movies.title}, 'durationMinutes', ${movies.durationMinutes})
+        `,
+        screen: sql<{ id: number; name: string }>`
+          json_build_object('id', ${screens.id}, 'name', ${screens.name})
+        `,
+        seats: sql<{ id: number; rowLetter: string; seatNumber: number; pricePaid: string }[]>`
+          COALESCE(
+            json_agg(
+              json_build_object('id', ${seats.id}, 'rowLetter', ${seats.rowLetter}, 'seatNumber', ${seats.seatNumber}, 'pricePaid', ${reservedSeats.pricePaid})
+              ORDER BY ${seats.rowLetter}, ${seats.seatNumber}
+            ) FILTER (WHERE ${seats.id} IS NOT NULL),
+            '[]'
+          )
+        `,
+      })
+      .from(reservations)
+      .innerJoin(showtimes, eq(showtimes.id, reservations.showtimeId))
+      .innerJoin(movies, eq(movies.id, showtimes.movieId))
+      .innerJoin(screens, eq(screens.id, showtimes.screenId))
+      .innerJoin(users, eq(users.id, reservations.userId))
+      .leftJoin(reservedSeats, eq(reservedSeats.reservationId, reservations.id))
+      .leftJoin(seats, eq(seats.id, reservedSeats.seatId))
+      .groupBy(reservations.id, showtimes.id, movies.id, screens.id, users.id)
+      .orderBy(sql`${reservations.createdAt} DESC`)
+      .limit(limit)
+      .offset(offset);
+  },
+
+  countAll() {
+    return db.select({ count: sql<number>`count(*)` }).from(reservations);
   },
 };

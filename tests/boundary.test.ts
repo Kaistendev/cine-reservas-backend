@@ -38,7 +38,7 @@ test("POST /movies — body sin campos requeridos con auth (400)", async () => {
   const login = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  const token = login.body.token;
+  const token = login.body.accessToken;
 
   const res = await request(app)
     .post("/movies")
@@ -51,7 +51,7 @@ test("POST /movies — solo title sin durationMinutes (400)", async () => {
   const login = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  const token = login.body.token;
+  const token = login.body.accessToken;
 
   const res = await request(app)
     .post("/movies")
@@ -64,7 +64,7 @@ test("POST /screens — totalCapacity negativo (400)", async () => {
   const login = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  const token = login.body.token;
+  const token = login.body.accessToken;
 
   const res = await request(app)
     .post("/screens")
@@ -77,7 +77,7 @@ test("POST /showtimes — ticketPrice negativo (400)", async () => {
   const login = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  const token = login.body.token;
+  const token = login.body.accessToken;
 
   const res = await request(app)
     .post("/showtimes")

@@ -4,7 +4,9 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import swaggerUi from "swagger-ui-express";
 import { env } from "./lib/env";
+import { swaggerSpec } from "./docs/swagger";
 import authRoutes from "./routes/auth.routes";
 import movieRoutes from "./routes/movie.routes";
 import categoryRoutes from "./routes/category.routes";
@@ -12,6 +14,7 @@ import screenRoutes from "./routes/screen.routes";
 import showtimeRoutes from "./routes/showtime.routes";
 import reservationRoutes from "./routes/reservation.routes";
 import reportRoutes from "./routes/report.routes";
+import adminRoutes from "./routes/admin.routes";
 import { authenticate } from "./middleware/auth";
 import { errorHandler } from "./middleware/error-handler";
 import { authorize } from "./middleware/rbac";
@@ -55,10 +58,14 @@ app.get("/me", authenticate, (req, res) => {
 });
 
 app.use("/admin/reports", authenticate, authorize("ADMIN"), reportRoutes);
+app.use("/admin", authenticate, authorize("ADMIN"), adminRoutes);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (_req, res) => res.json(swaggerSpec));
 
 app.use(errorHandler);
 

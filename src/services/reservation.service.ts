@@ -90,6 +90,10 @@ export const reservationService = {
     return reservationRepo.findByUser(userId);
   },
 
+  findAll(page = 1, limit = 20) {
+    return reservationRepo.findAll(page, limit);
+  },
+
   async cancel(userId: number, reservationId: number) {
     const [reservation] = await reservationRepo.findById(reservationId);
     if (!reservation) throw new AppError(404, "Reserva no encontrada");

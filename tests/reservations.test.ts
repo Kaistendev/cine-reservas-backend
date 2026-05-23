@@ -12,12 +12,12 @@ beforeAll(async () => {
   const userRes = await request(app)
     .post("/auth/login")
     .send({ email: "user@cine.com", password: "admin123" });
-  userToken = userRes.body.token;
+  userToken = userRes.body.accessToken;
 
   const adminRes = await request(app)
     .post("/auth/login")
     .send({ email: "admin@cine.com", password: "admin123" });
-  adminToken = adminRes.body.token;
+  adminToken = adminRes.body.accessToken;
 
   const catRes = await request(app)
     .post("/categories")
