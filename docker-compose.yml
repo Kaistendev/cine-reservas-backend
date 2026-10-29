@@ -23,12 +23,21 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://cineuser:cinepass@postgres:5432/cinereservas
-      JWT_SECRET: changeit
+      JWT_SECRET: changeitchangeitchangeit
+      JWT_REFRESH_SECRET: changeitchangeitchangeit2
       PORT: "3000"
       CORS_ORIGIN: "*"
     depends_on:
       postgres:
         condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: cine-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - app
 
 volumes:
   pgdata:
